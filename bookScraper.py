@@ -7,6 +7,7 @@
     - need to remove everything from content from <b>Notes</b> on 
     
     - need to remove notes and find a better pdf conversion tool to avoid â€
+    - â€ appears for —. Can i replace â€ with —?
 
 
 
@@ -81,13 +82,20 @@ def getContent(links):
         for i in con.find_all("b")[pos]:
             for j in i.find_all_next():
                 j.extract()
+            for j in i.find_all_next(string=True):
+                j.extract()
         con.find_all('b')[-1].extract()
+        #replace â€ with — in con
+        
+        #con.text.replace('â€', '—')
         content.append(con.prettify())
     return content[:5]
 
 
-def writeToHtml(headlines, content):
+def writeToHtml(headlines, content):    
     with open('book.html', 'w') as f:
+        #write on top of book.html content from head.html
+        f.write("<head><meta charset='utf-8'></head>")
         for headline, con in zip(headlines, content):
             f.write(headline)
             f.write(con)
@@ -96,6 +104,12 @@ def writeToHtml(headlines, content):
 
 def hmtlToPdf():
     import pdfkit
+    #before converting add <meta charset="utf-8"> to html head
+    '''with open('book.html', 'r') as f:
+        html = f.read()
+        html = html.replace('<head>', '<head><meta charset="utf-8">')
+        with open('book.html', 'w') as f:
+            f.write(html)'''
     pdfkit.from_file('book.html', 'new.pdf')
 
 
@@ -118,7 +132,11 @@ def test():
         for j in i.find_all_next():
             j.extract()
     #print adjusted soup
-    
+    #con.text.replace('â€', '—')
+    #in soup replace all â€ with —
+    #replace = soup.find_all(text='â€')
+    #replace = [i.replace('â€', '—') for i in replace]
+
     soup.find_all('b')[-1].extract()
     print(soup.prettify())        
 
@@ -131,8 +149,8 @@ if __name__ == '__main__':
     # getLinks()
     # print(getHeadlines())
     # print(getContent(getLinks()))
-    #writeToHtml(getHeadlines(), getContent(getLinks()))
-    #hmtlToPdf()
+    writeToHtml(getHeadlines(), getContent(getLinks()))
+    hmtlToPdf()
     #getContent("test")
-    test()
+    #test()
     # this works i should remove the notes section
