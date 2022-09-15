@@ -5,6 +5,8 @@
     - how do i deal with headers. in step where i get comp i also collect header in sperate var and add to seperate list
     - wjhen looping i always first write headline and then comp - need to check that headline is fat and has line breaks
     - need to remove everything from content from <b>Notes</b> on 
+    
+    - need to remove notes and find a better pdf conversion tool to avoid â€
 
 
 
@@ -52,13 +54,35 @@ def getHeadlines():
 
 
 def getContent(links):
+    '''getUrl = requests.get("http://www.paulgraham.com/fn.html")
+    soup = BeautifulSoup(getUrl.content, 'html.parser')
+    con = soup.find_all('font', face="verdana", size="2")[0]
+    all=con.find_all('b')
+    for i in all:
+        if i.text.strip() == 'Notes':
+            pos = all.index(i)
+    for i in con.find_all("b")[pos]:
+        for j in i.find_all_next():
+            j.extract()
+    con.find_all('b')[-1].extract()'''
+    #print(soup.prettify())
+    #print(con.prettify())
+    #content.append(con.prettify())
+    #return content[:5]
     content = []
     for link in links:
         getUrl = requests.get(link)
         soup = BeautifulSoup(getUrl.content, 'html.parser')
-        con = soup.find_all('font', face="verdana", size="2")[0].prettify()
-
-        content.append(con)
+        con = soup.find_all('font', face="verdana", size="2")[0]
+        all=con.find_all('b')
+        for i in all:
+            if i.text.strip() == 'Notes':
+                pos = all.index(i)
+        for i in con.find_all("b")[pos]:
+            for j in i.find_all_next():
+                j.extract()
+        con.find_all('b')[-1].extract()
+        content.append(con.prettify())
     return content[:5]
 
 
@@ -75,30 +99,29 @@ def hmtlToPdf():
     pdfkit.from_file('book.html', 'new.pdf')
 
 
-def test():
-    openHtml = open('book.html', 'r')
+def test(): 
+    openHtml = open('test.html', 'r')
     soup = BeautifulSoup(openHtml, 'html.parser')
+    #find all b tags
     all=soup.find_all('b')
-    
+    #iter over all b tags 
     for i in all:
+        #if text is notes store index
         if i.text.strip() == 'Notes':
             pos = all.index(i)
-            
-
+    #for in in notes tag 
     for i in soup.find_all("b")[pos]:
+        #this should contain the nerd text --> this contains actually all the text already - so the result should be text with stop at notes
+        #print(i.find_all_next())
+        for j in i.find_all_next(string=True):
+            j.extract()
         for j in i.find_all_next():
-            j.decompose()
-    print(soup.prettify())
-            
-    #print(obj.prettify())
-    #write obj to html file 
-    #with open('new.html', 'w') as f:
-     #   f.write(obj)
+            j.extract()
+    #print adjusted soup
     
-    #soup = soup.find_all("b")[pos].find_all_previous(string=True)
-    #print(soup)
+    soup.find_all('b')[-1].extract()
+    print(soup.prettify())        
 
-    
 
 
     
@@ -109,6 +132,7 @@ if __name__ == '__main__':
     # print(getHeadlines())
     # print(getContent(getLinks()))
     #writeToHtml(getHeadlines(), getContent(getLinks()))
-    # hmtlToPdf()
+    #hmtlToPdf()
+    #getContent("test")
     test()
     # this works i should remove the notes section
