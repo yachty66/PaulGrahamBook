@@ -9,3 +9,5 @@ Scrape of Paul Graham essays and compromised in one pdf.
 For uplaoding to reader software.
 
 ## Dependencies
+
+BeautifulSoup
